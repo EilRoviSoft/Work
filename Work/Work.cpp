@@ -48,6 +48,9 @@ class list {
 		bool operator==(const iterator& another) const {
 			return this->m_current == another.m_current;
 		}
+		bool operator!=(const iterator& another) const {
+			return this->m_current != another.m_current;
+		}
 
 	protected:
 		const container_t& m_container;
