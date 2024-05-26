@@ -3,11 +3,6 @@
 #include <tuple>
 
 template <class _ValType>
-struct list_cell_t;
-template <class _ValType>
-class list;
-
-template <class _ValType>
 struct list_cell_t {
 	list_cell_t(_ValType value, list_cell_t <_ValType>* left, list_cell_t <_ValType>* right) : v(value), l(left), r(right) {}
 	_ValType v;
@@ -59,7 +54,7 @@ class list {
 		cell_ptr m_current;
 
 	private:
-		iterator(const container_t& container) : m_container(container) {}
+		iterator(const container_t& container) : m_container(container), m_current(nullptr) {}
 	};
 public:
 	list() {}
@@ -101,6 +96,21 @@ public:
 				it = it->r;
 			}
 		}
+		return *this;
+	}
+
+	friend container_t operator+(const container_t& lhs, const container_t& rhs) {
+		container_t result;
+		result._resize_if_empty(lhs.size() + rhs.size());
+		auto it = result.begin();
+		for (auto jt = lhs.begin(); jt != lhs.end(); ++jt, ++it)
+			*it = *jt;
+		for (auto jt = rhs.begin(); jt != rhs.end(); ++jt, ++it)
+			*it = *jt;
+		return result;
+	}
+	container_t& operator+=(const container_t& another) {
+		this->push_range_back(another);
 		return *this;
 	}
 
@@ -181,9 +191,6 @@ public:
 			auto curr = this->m_head;
 			auto next = curr->r;
 			for (size_t j = 0; j != this->m_size - i - 1; ++j) {
-				/*for (auto it = this->begin(); it != this->end(); ++it)
-					std::cout << *it << ' ';
-				std::cout << ": " << i << ':' << j << '\n';*/
 				if (comp(curr->v, next->v)) {
 					value_t t = curr->v;
 					curr->v = next->v;
@@ -279,15 +286,30 @@ void print(list <_Type>& arr) {
 		std::cout << *it << ' ';
 }
 
-int main() {
+int fcmp(const float& l, const float& r) { return l < r; }
+
+void test0() {
 	list <float> l({ 3, 1, 8, 4, 9, 12, 5, 7 });
-	l.sort([](const float& l, const float& r) { return l > r; });
+	l.sort(&fcmp);
 	l.push_back(6);
 
-	std::cout << l[8] << '\n';
+	print(l);
+	std::cout << '\n';
 
 	auto [arr, size] = l.to_array();
 	for (size_t i = 0; i != size; i++)
 		std::cout << arr[i] * arr[i] << ' ';
 	delete[] arr;
+}
+void test1() {
+	list <float> l1{ 1, 2, 3 }, l2{ 1, 2, 3 };
+	l2 += l1;
+	auto [arr, size] = l2.to_array();
+	for (size_t i = 0; i != size; i++)
+		std::cout << arr[i] << ' ';
+	delete[] arr;
+}
+
+int main() {
+	test1();
 }
