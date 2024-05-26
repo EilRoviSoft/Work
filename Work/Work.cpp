@@ -221,10 +221,8 @@ public:
 	carray_t <value_t> to_array() const {
 		value_ptr result = new value_t[this->m_size];
 		size_t i = 0;
-		for (auto it : *this) {
-			result[i] = it;
-			++i;
-		}
+		for (auto it = this->begin(); it != this->end(); ++it, ++i)
+			result[i] = *it;
 		return { result, this->m_size };
 	}
 
