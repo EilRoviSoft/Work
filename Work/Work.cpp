@@ -225,6 +225,17 @@ public:
 			result[i] = *it;
 		return { result, this->m_size };
 	}
+	void reverse() {
+		cell_ptr it = this->m_head, jt = this->m_tail;
+		for (size_t i = 0; i != this->m_size / 2; i++) {
+			value_t t = it->v;
+			it->v = jt->v;
+			jt->v = t;
+
+			it = it->r;
+			jt = jt->l;
+		}
+	}
 
 	iterator begin() const {
 		return iterator(*this, this->m_head);
@@ -289,7 +300,7 @@ void print(list <_Type>& arr) {
 
 int fcmp(const float& l, const float& r) { return l < r; }
 
-void test0() {
+void test1() {
 	list <float> l({ 3, 1, 8, 4, 9, 12, 5, 7 });
 	l.sort(&fcmp);
 	l.push_back(6);
@@ -297,12 +308,22 @@ void test0() {
 	print(l);
 	std::cout << '\n';
 
-	auto [arr, size] = l.to_array();
-	for (size_t i = 0; i != size; i++)
-		std::cout << arr[i] * arr[i] << ' ';
-	delete[] arr;
+	{
+		auto [arr, size] = l.to_array();
+		for (size_t i = 0; i != size; i++)
+			std::cout << arr[i] * arr[i] << ' ';
+		std::cout << '\n';
+		delete[] arr;
+	}
+	l.reverse();
+	{
+		auto [arr, size] = l.to_array();
+		for (size_t i = 0; i != size; i++)
+			std::cout << arr[i] * arr[i] << ' ';
+		delete[] arr;
+	}
 }
-void test1() {
+void test2() {
 	list <float> l1{ 1, 2, 3 }, l2{ 1, 2, 3 };
 	l2 += l1;
 	auto [arr, size] = l2.to_array();
